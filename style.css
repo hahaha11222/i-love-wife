@@ -347,3 +347,25 @@ body {
   background: var(--accent);
   color: white;
 }
+
+/* Swipe popup (after swipe-right) */
+.swipe-popup {
+  position: fixed;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  color: var(--text);
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  z-index: 10000;
+  width: 90%;
+  max-width: 280px;
+  text-align: center;
+}
+
+.swipe-popup p {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
