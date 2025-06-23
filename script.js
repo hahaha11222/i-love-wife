@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
       popup.className = 'popup-content';
 
       const message = document.createElement('p');
-      message.textContent = `Delete "${label.textContent}"?`;
+      message.textContent = `Are you sure you want to delete "${label.textContent}"?`;
       popup.appendChild(message);
 
       const buttons = document.createElement('div');
@@ -198,6 +198,8 @@ document.addEventListener('DOMContentLoaded', function () {
           note.style.textAlign = 'center';
           note.style.marginTop = '20px';
           note.style.opacity = '0.6';
+          note.style.width = '100%';
+          note.style.pointerEvents = 'none';
           container.appendChild(note);
         }
       };
@@ -245,6 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // WATCHLIST
   const folderContainer = document.getElementById('watchlist-folders');
   if (folderContainer && folderContainer.children.length === 0) {
     const note = document.createElement('p');
@@ -253,6 +256,38 @@ document.addEventListener('DOMContentLoaded', function () {
     note.style.textAlign = 'center';
     note.style.marginTop = '20px';
     note.style.opacity = '0.6';
+    note.style.width = '100%';
+    note.style.pointerEvents = 'none';
     folderContainer.appendChild(note);
+  }
+
+  // CURRENTLY WATCHING
+  const watchingContainer = document.getElementById('watching-movies');
+  if (watchingContainer && watchingContainer.children.length === 0) {
+    const note = document.createElement('p');
+    note.textContent = 'Nothing here yet. Add movies you are watching.';
+    note.id = 'empty-watching';
+    note.style.textAlign = 'center';
+    note.style.marginTop = '20px';
+    note.style.opacity = '0.6';
+    note.style.width = '100%';
+    note.style.gridColumn = '1 / -1';
+    note.style.pointerEvents = 'none';
+    watchingContainer.appendChild(note);
+  }
+
+  // FINISHED
+  const finishedContainer = document.getElementById('finished-movies');
+  if (finishedContainer && finishedContainer.children.length === 0) {
+    const note = document.createElement('p');
+    note.textContent = 'No finished movies yet.';
+    note.id = 'empty-finished';
+    note.style.textAlign = 'center';
+    note.style.marginTop = '20px';
+    note.style.opacity = '0.6';
+    note.style.width = '100%';
+    note.style.gridColumn = '1 / -1';
+    note.style.pointerEvents = 'none';
+    finishedContainer.appendChild(note);
   }
 });
