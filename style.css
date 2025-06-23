@@ -27,6 +27,7 @@ body {
   margin: 0;
   padding: 20px;
   transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hidden {
@@ -245,6 +246,10 @@ body {
   display: inline-block;
 }
 
+.popup-content span:last-child {
+  font-family: monospace;
+}
+
 .popup-buttons {
   display: flex;
   justify-content: flex-end;
@@ -260,11 +265,19 @@ body {
   cursor: pointer;
 }
 
+/* ✅ Folder wrapper and layout */
+.folder-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(33.333% - 8px);
+  max-width: calc(33.333% - 8px);
+}
+
 /* Google Drive-like Folder */
 .drive-folder {
   box-sizing: border-box;
-  flex: 0 0 calc(33.333% - 8px);
-  max-width: calc(33.333% - 8px);
+  width: 100%;
   padding: 14px 8px;
   height: 90px;
   font-size: 13px;
@@ -293,27 +306,23 @@ body {
   transform: translateY(-50%);
 }
 
-/* ✅ Updated Folder Name Styling */
-.drive-folder span {
-  position: absolute;
-  bottom: 10px;
-  right: 12px;
+.drive-folder:hover {
+  transform: scale(1.05);
+}
+
+/* Folder name below the folder */
+.folder-name {
   font-size: 13px;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
-  max-width: 90%;
-  text-align: right;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  margin-top: 4px;
+  text-align: center;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: rgba(255, 255, 255, 0.92);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.drive-folder:hover {
-  transform: scale(1.05);
 }
 
 /* Folder rename/delete button group */
@@ -346,26 +355,4 @@ body {
 .folder-actions button:hover {
   background: var(--accent);
   color: white;
-}
-
-/* Swipe popup (after swipe-right) */
-.swipe-popup {
-  position: fixed;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--card-bg);
-  color: var(--text);
-  padding: 16px 20px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  z-index: 10000;
-  width: 90%;
-  max-width: 280px;
-  text-align: center;
-}
-
-.swipe-popup p {
-  font-size: 14px;
-  margin-bottom: 12px;
 }
