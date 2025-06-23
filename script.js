@@ -118,8 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
     folder.className = 'drive-folder';
     folder.style.backgroundColor = color;
     folder.style.opacity = '0';
-    folder.style.transform = 'scale(0.60)';
-    folder.style.transition = 'all 0.3s ease';
+    folder.style.transform = 'scale(0.85)';
 
     const folderName = document.createElement('span');
     folderName.textContent = name;
@@ -165,12 +164,57 @@ document.addEventListener('DOMContentLoaded', function () {
       actions.classList.toggle('hidden');
     });
 
-    // ✅ Animate from small to normal size with delay
-    setTimeout(() => {
+    addSwipeListeners(folder, folderName);
+
+    requestAnimationFrame(() => {
+      folder.style.transition = 'all 0.3s ease';
       folder.style.opacity = '1';
       folder.style.transform = 'scale(1)';
-    }, 10);
+    });
   };
+
+  function addSwipeListeners(folder, folderName) {
+    let startX = 0;
+
+    folder.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+    });
+
+    folder.addEventListener('touchend', e => {
+      const endX = e.changedTouches[0].clientX;
+      const deltaX = endX - startX;
+
+      folder.style.transition = 'transform 0.2s ease';
+
+      if (deltaX > 50) {
+        folder.style.transform = 'translateX(20px)';
+        setTimeout(() => {
+          folder.style.transform = 'translateX(0)';
+          const newName = prompt('Enter new folder name:', folderName.textContent);
+          if (newName) folderName.textContent = newName;
+        }, 150);
+      } else if (deltaX < -50) {
+        folder.style.transform = 'translateX(-20px)';
+        setTimeout(() => {
+          folder.style.transform = 'translateX(0)';
+          const confirmDelete = confirm(`Delete "${folderName.textContent}"?`);
+          if (confirmDelete) {
+            folder.remove();
+            const container = document.getElementById('watchlist-folders');
+            if (container.children.length === 0) {
+              const note = document.createElement('p');
+              note.textContent = 'No folders yet. Tap the + button to create one.';
+              note.id = 'empty-watchlist';
+              note.style.textAlign = 'center';
+              note.style.marginTop = '20px';
+              note.style.opacity = '0.6';
+              container.appendChild(note);
+            }
+          }
+        }, 150);
+      }
+    });
+  }
 
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', () => {
