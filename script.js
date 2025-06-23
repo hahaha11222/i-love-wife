@@ -118,7 +118,8 @@ document.addEventListener('DOMContentLoaded', function () {
     folder.className = 'drive-folder';
     folder.style.backgroundColor = color;
     folder.style.opacity = '0';
-    folder.style.transform = 'scale(0.85)';
+    folder.style.transform = 'scale(0.60)';
+    folder.style.transition = 'all 0.3s ease';
 
     const folderName = document.createElement('span');
     folderName.textContent = name;
@@ -159,17 +160,16 @@ document.addEventListener('DOMContentLoaded', function () {
     folder.appendChild(actions);
     container.appendChild(folder);
 
-    // Show/hide on double click
     folder.addEventListener('dblclick', (e) => {
       e.stopPropagation();
       actions.classList.toggle('hidden');
     });
 
-    requestAnimationFrame(() => {
-      folder.style.transition = 'all 0.3s ease';
+    // ✅ Animate from small to normal size with delay
+    setTimeout(() => {
       folder.style.opacity = '1';
       folder.style.transform = 'scale(1)';
-    });
+    }, 10);
   };
 
   document.querySelectorAll('.card').forEach(card => {
