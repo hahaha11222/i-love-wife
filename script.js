@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const colorHexLabel = document.createElement('span');
     colorHexLabel.textContent = colorInput.value;
+    colorHexLabel.style.fontFamily = 'monospace';
     colorWrapper.appendChild(colorHexLabel);
 
     colorInput.addEventListener('input', () => {
@@ -114,15 +115,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const emptyNote = document.getElementById('empty-watchlist');
     if (emptyNote) emptyNote.remove();
 
+    const wrapper = document.createElement('div');
+    wrapper.className = 'folder-wrapper';
+
     const folder = document.createElement('div');
     folder.className = 'drive-folder';
     folder.style.backgroundColor = color;
     folder.style.opacity = '0';
     folder.style.transform = 'scale(0.85)';
-
-    const folderName = document.createElement('span');
-    folderName.textContent = name;
-    folder.appendChild(folderName);
 
     const actions = document.createElement('div');
     actions.className = 'folder-actions hidden';
@@ -131,27 +131,105 @@ document.addEventListener('DOMContentLoaded', function () {
     renameBtn.textContent = 'Rename';
     renameBtn.onclick = (e) => {
       e.stopPropagation();
-      showRenamePopup(folderName);
+      const renameOverlay = document.createElement('div');
+      renameOverlay.className = 'folder-popup';
+
+      const popup = document.createElement('div');
+      popup.className = 'popup-content';
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'New folder name';
+      input.value = label.textContent;
+
+      const buttons = document.createElement('div');
+      buttons.className = 'popup-buttons';
+
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = 'Save';
+      saveBtn.onclick = () => {
+        const newName = input.value.trim();
+        if (newName) {
+          label.textContent = newName;
+          renameOverlay.remove();
+        }
+      };
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.style.background = '#aaa';
+      cancelBtn.style.color = '#fff';
+      cancelBtn.onclick = () => renameOverlay.remove();
+
+      buttons.appendChild(saveBtn);
+      buttons.appendChild(cancelBtn);
+      popup.appendChild(input);
+      popup.appendChild(buttons);
+      renameOverlay.appendChild(popup);
+      document.body.appendChild(renameOverlay);
     };
 
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Delete';
     deleteBtn.onclick = (e) => {
       e.stopPropagation();
-      showDeleteConfirmation(folder, folderName.textContent);
+      const confirmOverlay = document.createElement('div');
+      confirmOverlay.className = 'folder-popup';
+
+      const popup = document.createElement('div');
+      popup.className = 'popup-content';
+
+      const message = document.createElement('p');
+      message.textContent = `Delete "${label.textContent}"?`;
+      popup.appendChild(message);
+
+      const buttons = document.createElement('div');
+      buttons.className = 'popup-buttons';
+
+      const confirmBtn = document.createElement('button');
+      confirmBtn.textContent = 'Yes';
+      confirmBtn.onclick = () => {
+        wrapper.remove();
+        confirmOverlay.remove();
+        if (container.children.length === 0) {
+          const note = document.createElement('p');
+          note.textContent = 'No folders yet. Tap the + button to create one.';
+          note.id = 'empty-watchlist';
+          note.style.textAlign = 'center';
+          note.style.marginTop = '20px';
+          note.style.opacity = '0.6';
+          container.appendChild(note);
+        }
+      };
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.style.background = '#aaa';
+      cancelBtn.style.color = '#fff';
+      cancelBtn.onclick = () => confirmOverlay.remove();
+
+      buttons.appendChild(confirmBtn);
+      buttons.appendChild(cancelBtn);
+      popup.appendChild(buttons);
+      confirmOverlay.appendChild(popup);
+      document.body.appendChild(confirmOverlay);
     };
 
     actions.appendChild(renameBtn);
     actions.appendChild(deleteBtn);
     folder.appendChild(actions);
-    container.appendChild(folder);
-
     folder.addEventListener('dblclick', (e) => {
       e.stopPropagation();
       actions.classList.toggle('hidden');
     });
 
-    addSwipeListeners(folder, folderName);
+    const label = document.createElement('div');
+    label.className = 'folder-name';
+    label.textContent = name;
+
+    wrapper.appendChild(folder);
+    wrapper.appendChild(label);
+    container.appendChild(wrapper);
 
     requestAnimationFrame(() => {
       folder.style.transition = 'all 0.3s ease';
@@ -159,143 +237,6 @@ document.addEventListener('DOMContentLoaded', function () {
       folder.style.transform = 'scale(1)';
     });
   };
-
-  function addSwipeListeners(folder, folderNameElement) {
-    let startX = 0;
-
-    folder.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-    });
-
-    folder.addEventListener('touchend', (e) => {
-      const endX = e.changedTouches[0].clientX;
-      const deltaX = endX - startX;
-
-      if (deltaX > 50) {
-        folder.style.transition = 'transform 0.2s ease';
-        folder.style.transform = 'translateX(30px)';
-        setTimeout(() => {
-          folder.style.transform = 'translateX(0)';
-          showSwipeActionPopup(folder, folderNameElement);
-        }, 150);
-      }
-    });
-  }
-
-  function showSwipeActionPopup(folder, folderNameElement) {
-    const existing = document.querySelector('.swipe-popup');
-    if (existing) existing.remove();
-
-    const popup = document.createElement('div');
-    popup.className = 'swipe-popup popup-box';
-
-    const label = document.createElement('p');
-    label.textContent = 'What do you want to do?';
-    popup.appendChild(label);
-
-    const buttons = document.createElement('div');
-    buttons.className = 'popup-buttons';
-
-    const renameBtn = document.createElement('button');
-    renameBtn.textContent = 'Rename';
-    renameBtn.onclick = () => {
-      popup.remove();
-      showRenamePopup(folderNameElement);
-    };
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.style.background = '#d64545';
-    deleteBtn.onclick = () => {
-      popup.remove();
-      showDeleteConfirmation(folder, folderNameElement.textContent);
-    };
-
-    buttons.appendChild(renameBtn);
-    buttons.appendChild(deleteBtn);
-    popup.appendChild(buttons);
-
-    document.body.appendChild(popup);
-  }
-
-  function showRenamePopup(folderNameElement) {
-    const existing = document.querySelector('.rename-popup');
-    if (existing) existing.remove();
-
-    const popup = document.createElement('div');
-    popup.className = 'rename-popup popup-box';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'New folder name';
-    input.value = folderNameElement.textContent;
-    popup.appendChild(input);
-
-    const buttons = document.createElement('div');
-    buttons.className = 'popup-buttons';
-
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = 'Save';
-    saveBtn.onclick = () => {
-      const newName = input.value.trim();
-      if (newName) folderNameElement.textContent = newName;
-      popup.remove();
-    };
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.onclick = () => popup.remove();
-
-    buttons.appendChild(saveBtn);
-    buttons.appendChild(cancelBtn);
-    popup.appendChild(buttons);
-
-    document.body.appendChild(popup);
-  }
-
-  function showDeleteConfirmation(folderElement, folderName) {
-    const existing = document.querySelector('.delete-confirm-popup');
-    if (existing) existing.remove();
-
-    const popup = document.createElement('div');
-    popup.className = 'delete-confirm-popup popup-box';
-
-    const msg = document.createElement('p');
-    msg.textContent = `Are you sure you want to delete "${folderName}"?`;
-    popup.appendChild(msg);
-
-    const buttons = document.createElement('div');
-    buttons.className = 'popup-buttons';
-
-    const confirmBtn = document.createElement('button');
-    confirmBtn.textContent = 'Delete';
-    confirmBtn.style.background = '#e74c3c';
-    confirmBtn.style.color = '#fff';
-    confirmBtn.onclick = () => {
-      folderElement.remove();
-      popup.remove();
-      const container = document.getElementById('watchlist-folders');
-      if (container.children.length === 0) {
-        const note = document.createElement('p');
-        note.textContent = 'No folders yet. Tap the + button to create one.';
-        note.id = 'empty-watchlist';
-        note.style.textAlign = 'center';
-        note.style.marginTop = '20px';
-        note.style.opacity = '0.6';
-        container.appendChild(note);
-      }
-    };
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.onclick = () => popup.remove();
-
-    buttons.appendChild(confirmBtn);
-    buttons.appendChild(cancelBtn);
-    popup.appendChild(buttons);
-
-    document.body.appendChild(popup);
-  }
 
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', () => {
